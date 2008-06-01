@@ -1,0 +1,339 @@
+<html>
+  <head>
+    <script src="js_tile.js" type="text/javascript" />
+    <style type="text/css" media="screen">
+      body{ margin:0; padding:10px;}
+      .input, .output{
+        min-height:10px;
+        margin:0;
+        border:1px solid white;
+        padding:10px;
+        float:left;
+        width:45%;
+      }
+      .pending{ background-color:yellow;}
+      .output{ margin-bottom: 10px;}
+      h2, h3{margin:0; clear:both;}
+      h2 {font-size:12px;}
+      h3{font-size:10px;}
+      
+      ul, ol, li{margin:0; padding:0; padding-left:0.5em; line-height:0.5em;}
+    </style>
+  </head>
+  <body>
+
+<h2>Emtpy</h2>
+<pre class="input">
+</pre><pre class="output">
+</pre>
+
+
+<h2>Just a heading</h2>
+<pre class="input">
+h1. huhu
+
+</pre><pre class="output">
+<h1>huhu</h1>
+</pre>
+
+
+<h2>A heading with text following</h2>
+<pre class="input">
+h1. huhu
+
+blabla
+</pre><pre class="output">
+<h1>huhu</h1>
+blabla
+</pre>
+
+
+<h2>A multiline heading with following text</h2>
+<pre class="input">
+h1. huhu
+haha
+
+blabla
+</pre><pre class="output">
+<h1>huhu
+haha</h1>
+blabla
+</pre>
+
+
+<h2>A tab</h2>
+<pre class="input">
+some
+  
+text
+</pre><pre class="output">
+some
+
+text
+</pre>
+
+
+<h2>Two white spaces</h2>
+<pre class="input">
+some
+  
+text
+</pre><pre class="output">
+some
+
+text
+</pre>
+
+
+<h2>strong in the middle</h2>
+<pre class="input">
+some *strong* text
+</pre><pre class="output">
+some <strong>strong</strong> text
+</pre>
+
+<h2>strong at the beginning</h2>
+<pre class="input">
+*some strong* text
+</pre><pre class="output">
+<strong>some strong</strong> text
+</pre>
+
+<h2>strong at the end</h2>
+<pre class="input">
+some *strong text*
+</pre><pre class="output">
+some <strong>strong text</strong>
+</pre>
+
+<h2>strong with punctuation</h2>
+<pre class="input">
+some *strong*, text
+</pre><pre class="output">
+some <strong>strong</strong>, text
+</pre>
+
+<h2>strong not greedy</h2>
+<pre class="input">
+some *strong* text *more* strong
+</pre><pre class="output">
+some <strong>strong</strong> text <strong>more</strong> strong
+</pre>
+
+<h2>strong</h2>
+<h3>We just ignore partly strong words</h3>
+<pre class="input">
+some*strong* text
+</pre><pre class="output">
+some*strong* text
+</pre>
+
+
+<h2>emphasis</h2>
+<pre class="input">
+some _emphasis_ text
+</pre><pre class="output">
+some <em>emphasis</em> text
+</pre>
+
+
+<h2>deleted</h2>
+<pre class="input">
+some -deleted- text
+</pre><pre class="output">
+some <del>deleted</del> text
+</pre>
+
+<h2>cite</h2>
+<pre class="input">
+some ??cited?? text
+</pre><pre class="output">
+some <cite>cited</cite> text
+</pre>
+
+<h2>sup</h2>
+<pre class="input">
+some dumb^2^ text
+</pre><pre class="output">
+some dumb<sup>2</sup> text
+</pre>
+
+<h2>sup with punctuation</h2>
+<pre class="input">
+this is dumb^2^!
+</pre><pre class="output">
+this is dumb<sup>2</sup>!
+</pre>
+
+<h2>some math (not converted)</h2>
+<pre class="input">
+here we 4 - 2 do 6-7 some math 4*5 and 6 * 7 more!
+</pre><pre class="output">
+here we 4 - 2 do 6-7 some math 4*5 and 6 * 7 more!
+</pre>
+
+
+<h2>sup</h2>
+<pre class="input">
+some ~sub~ text
+</pre><pre class="output">
+some <sub>sub</sub> text
+</pre>
+
+
+<h2>link</h2>
+<pre class="input">
+some "linked":bla text
+</pre><pre class="output">
+some <a href="bla">linked</a> text
+</pre>
+
+<h2>link with space</h2>
+<pre class="input">
+some "linked text":bla text
+</pre><pre class="output">
+some <a href="bla">linked text</a> text
+</pre>
+
+<h2>link without leading space</h2>
+<h3>we're liberal here; this pattern is quite special for textile anyway</h3>
+<pre class="input">
+some"linked":bla text
+</pre><pre class="output">
+some<a href="bla">linked</a> text
+</pre>
+
+<h2>link without trailing space</h2>
+<h3>needs to be separated by a \</h3>
+<pre class="input">
+some "linked":bla\text
+</pre><pre class="output">
+some <a href="bla">linked</a>text
+</pre>
+
+<h2>link with a query string</h2>
+<pre class="input">
+some "linked":bla?huch=hach text
+</pre><pre class="output">
+some <a href="bla?huch=hach">linked</a> text
+</pre>
+
+<h2>images</h2>
+<pre class="input">
+some !image.gif! text
+</pre><pre class="output">
+some <img src="image.gif"> text
+</pre>
+
+
+<h2>linked images</h2>
+<pre class="input">
+some !image.gif!:bla text
+</pre><pre class="output">
+some <a href="bla"><img src="image.gif"></a> text
+</pre>
+
+
+
+<h2>unordered lists</h2>
+<pre class="input">
+* one
+* two
+* three
+</pre><pre class="output">
+<ul>
+<li>one</li>
+<li>two</li>
+<li>three</li>
+</ul>
+</pre>
+
+<h2>unordered lists embedded in text</h2>
+<pre class="input">
+some text
+
+* one
+* two
+* three
+* four
+
+more text
+</pre><pre class="output">
+some text
+
+<ul>
+<li>one</li>
+<li>two</li>
+<li>three</li>
+<li>four</li>
+</ul>
+
+more text
+</pre>
+
+<h2>nested unordered lists</h2>
+<h3>(for now) we only support 2 nesting levels</h3>
+<pre class="input">
+* one
+** one-1
+** one-2
+** one-3
+* two
+* three
+* four
+</pre><pre class="output">
+<ul>
+<li>one
+<ul>
+<li>one-1</li>
+<li>one-2</li>
+<li>one-3</li>
+</ul>
+</li>
+<li>two</li>
+<li>three</li>
+<li>four</li>
+</ul>
+</pre>
+
+<h2>unordered lists nested at the end</h2>
+<pre class="input">
+some text
+
+* one
+** two
+** three
+
+more text
+</pre><pre class="output">
+some text
+
+<ul>
+<li>one
+<ul>
+<li>two</li>
+<li>three</li>
+</ul>
+</li>
+</ul>
+
+more text
+</pre>
+
+<h2>more unordered lists nested at the end</h2>
+<h3>doesn't work yet: closing li and ul missing</h3>
+<pre class="input pending">
+* one
+** two
+</pre><pre class="output pending">
+<ul>
+<li>one
+<ul>
+<li>two</li>
+</ul>
+</li>
+</ul>
+</pre>
+
+  </body>
+</html>
