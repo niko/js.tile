@@ -94,7 +94,7 @@ Textile.converter = function() {
 
 	this.hard_breaks = function(text){
 		var hard_break_re = new RegExp('(<(p|li|h\\d)>)([^>]+)(\n)([^<]+)(</(p|li|h\\d)>)','g');
-		text = text.replace(hard_break_re, '$1$3<br/>\n$5$6');
+		text = text.replace(hard_break_re, '$1$3<br>\n$5$6');
 		return(text);
 	}
   
@@ -124,8 +124,8 @@ function run_tests(){
     if ( converted != expected ) {
       inputs[i].style.backgroundColor = 'red';
       outputs[i].style.backgroundColor = 'red';
-      error_output = 'expected <br/><textarea>' + expected + '</textarea><br/>';
-      error_output += 'but got<br/><textarea>' + converted + '</textarea><br/>';
+      error_output = 'expected <br><textarea>' + expected + '</textarea><br>';
+      error_output += 'but got<br><textarea>' + converted + '</textarea><br>';
 			converted_lines = converted.split('\n');
 			expected_lines = expected.split('\n');
 			diff = [];
