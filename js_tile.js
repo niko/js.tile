@@ -10,6 +10,7 @@ var Textile = Textile || {};
 Textile.converter = function() {
   
   this.to_html = function(text) {
+    text = '\n\n' + text + '\n\n\n'; // wrap in linebreaks
     text = this.empty_blank_lines(text);
     text = this.quick_tags(text);
     text = this.hyperref_images(text);
@@ -17,12 +18,14 @@ Textile.converter = function() {
     text = this.images(text);
     text = this.headings(text);
     text = this.unordered_lists(text);
+    text = this.paragraphs(text);
+    text = text.replace(/^\n*/,'').replace(/\n*$/,''); // strip linebreaks again
     return text;
   };
   
   this.headings = function(text){
-    var header_re = new RegExp('h([1|2|3|4|5|6])\. ([^]+)\n\n');
-    return( text.replace(header_re,'<h$1>$2</h$1>\n') );
+    var header_re = new RegExp('h([1|2|3|4|5|6])\. ((.+\n)+)\n'); // [^] == anything, including linebreaks
+    return( text.replace(header_re,'<h$1>$2</h$1>\n\n') );
   };
   
   this.empty_blank_lines = function(text){
@@ -40,7 +43,7 @@ Textile.converter = function() {
     ['@', 'code']];
     for (var i=0; i<qtags.length; i++) {
       ttag = qtags[i][0]; htag = qtags[i][1];
-      qt_re = new RegExp( '(^|\\s)' + ttag + '(.+?)' + ttag + '(\\s|,|!|\\?|\\.|$)' , 'g');
+      qt_re = new RegExp( '(\\s)' + ttag + '(.+?)' + ttag + '(\\s|,|!|\\?|\\.)' , 'g');
       text = text.replace(qt_re,'$1<'+htag+'>'+'$2'+'</'+htag+'>$3');
     }
     // sup and sup tags may follow directly on a word character:
@@ -49,7 +52,7 @@ Textile.converter = function() {
     ['\\^', 'sup']];
     for (var i=0; i<qtags.length; i++) {
       ttag = qtags[i][0]; htag = qtags[i][1];
-      qt_re = new RegExp( ttag + '(.+?)' + ttag + '(\\s|,|!|\\?|\\.|$)' , 'g');
+      qt_re = new RegExp( ttag + '(.+?)' + ttag + '(\\s|,|!|\\?|\\.)' , 'g');
       text = text.replace(qt_re,'<'+htag+'>'+'$1'+'</'+htag+'>$2');
     }
     return(text);
@@ -72,8 +75,8 @@ Textile.converter = function() {
   }
   
   this.unordered_lists = function(text){
-    var first_ul_re         = new RegExp('(^|\n\n)\\*(\\*)? (.+)\n','g');
-    var last_ul_re          = new RegExp('(\n)\\*(\\*)? (.+)\n(\n|$)','g');
+    var first_ul_re         = new RegExp('(\n\n)\\*(\\*)? (.+)\n','g');
+    var last_ul_re          = new RegExp('(\n)\\*(\\*)? (.+)\n(\n)','g');
     var ul_re               = new RegExp('(\n)\\*(\\*)? (.+)','g');
     var first_nested_ul_re   = new RegExp('(\n<li>.*)</li>\n\\*','g');
     var last_nested_ul_re   = new RegExp('\n\\*(<li>.*</li>)(\n[^\\*])','g');
@@ -86,7 +89,16 @@ Textile.converter = function() {
     text = text.replace(middle_nester_re,          '\n$1','g');
     return(text)
   }
+
+	// this.line_breaks = function
   
+	this.paragraphs = function(text){
+		var paragraph_re = new RegExp('(\n\n)(([^\\s<].*\n)+)\n','g');
+		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
+		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n'); // we do this twice because of overlapping regexps
+		return(text);
+	}
+	
 };
 
 function run_tests(){
@@ -100,10 +112,11 @@ function run_tests(){
   var num_failing = 0;
   for (var i = 0; i < inputs.length; i++){
     converted = converter.to_html(inputs[i].innerHTML);
-    if ( converted != outputs[i].innerHTML ) {
+    output = outputs[i].innerHTML.replace(/^\n*/,'').replace(/\n*$/,'')
+    if ( converted != output ) {
       inputs[i].style.backgroundColor = 'red';
       outputs[i].style.backgroundColor = 'red';
-      outputs[i].innerHTML = converted + '<hr/>' + outputs[i].innerHTML;
+      outputs[i].innerHTML = converted + '<hr/>expected<br/><textarea>' + output + '</textarea><br/>but got<br/><textarea>' + converted + '</textarea>';
       num_failing++;
     }else{
       inputs[i].style.backgroundColor = 'green';
@@ -126,6 +139,4 @@ function getElementsByClassNames(classnames){
   return(elements);
 }
 
-
-
-window.onload = run_tests; 
+window.onload = run_tests;

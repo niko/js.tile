@@ -16,8 +16,10 @@
       h2, h3{margin:0; clear:both;}
       h2 {font-size:12px;}
       h3{font-size:10px;}
+      p{border:1px dotted #eee;}
       
       ul, ol, li{margin:0; padding:0; padding-left:0.5em; line-height:0.5em;}
+      textarea{ width:100%; height:10em;}
     </style>
   </head>
   <body>
@@ -33,22 +35,28 @@
 h1. huhu
 
 </pre><pre class="output">
-<h1>huhu</h1>
+<h1>huhu
+</h1>
 </pre>
 
 
-<h2>A heading with text following</h2>
+<h2>A heading with text following
+</h2>
 <pre class="input">
 h1. huhu
 
 blabla
 </pre><pre class="output">
-<h1>huhu</h1>
-blabla
+<h1>huhu
+</h1>
+
+<p>blabla
+</p>
 </pre>
 
 
-<h2>A multiline heading with following text</h2>
+<h2>A multiline heading with following text
+</h2>
 <pre class="input">
 h1. huhu
 haha
@@ -56,20 +64,26 @@ haha
 blabla
 </pre><pre class="output">
 <h1>huhu
-haha</h1>
-blabla
+haha
+</h1>
+
+<p>blabla
+</p>
 </pre>
 
 
 <h2>A tab</h2>
 <pre class="input">
 some
-  
+	
 text
-</pre><pre class="output">
-some
 
-text
+</pre><pre class="output">
+<p>some
+</p>
+
+<p>text
+</p>
 </pre>
 
 
@@ -78,10 +92,13 @@ text
 some
   
 text
-</pre><pre class="output">
-some
 
-text
+</pre><pre class="output">
+<p>some
+</p>
+
+<p>text
+</p>
 </pre>
 
 
@@ -89,7 +106,8 @@ text
 <pre class="input">
 some *strong* text
 </pre><pre class="output">
-some <strong>strong</strong> text
+<p>some <strong>strong</strong> text
+</p>
 </pre>
 
 <h2>strong at the beginning</h2>
@@ -103,21 +121,24 @@ some <strong>strong</strong> text
 <pre class="input">
 some *strong text*
 </pre><pre class="output">
-some <strong>strong text</strong>
+<p>some <strong>strong text</strong>
+</p>
 </pre>
 
 <h2>strong with punctuation</h2>
 <pre class="input">
 some *strong*, text
 </pre><pre class="output">
-some <strong>strong</strong>, text
+<p>some <strong>strong</strong>, text
+</p>
 </pre>
 
 <h2>strong not greedy</h2>
 <pre class="input">
 some *strong* text *more* strong
 </pre><pre class="output">
-some <strong>strong</strong> text <strong>more</strong> strong
+<p>some <strong>strong</strong> text <strong>more</strong> strong
+</p>
 </pre>
 
 <h2>strong</h2>
@@ -125,7 +146,8 @@ some <strong>strong</strong> text <strong>more</strong> strong
 <pre class="input">
 some*strong* text
 </pre><pre class="output">
-some*strong* text
+<p>some*strong* text
+</p>
 </pre>
 
 
@@ -133,7 +155,8 @@ some*strong* text
 <pre class="input">
 some _emphasis_ text
 </pre><pre class="output">
-some <em>emphasis</em> text
+<p>some <em>emphasis</em> text
+</p>
 </pre>
 
 
@@ -141,35 +164,40 @@ some <em>emphasis</em> text
 <pre class="input">
 some -deleted- text
 </pre><pre class="output">
-some <del>deleted</del> text
+<p>some <del>deleted</del> text
+</p>
 </pre>
 
 <h2>cite</h2>
 <pre class="input">
 some ??cited?? text
 </pre><pre class="output">
-some <cite>cited</cite> text
+<p>some <cite>cited</cite> text
+</p>
 </pre>
 
 <h2>sup</h2>
 <pre class="input">
 some dumb^2^ text
 </pre><pre class="output">
-some dumb<sup>2</sup> text
+<p>some dumb<sup>2</sup> text
+</p>
 </pre>
 
 <h2>sup with punctuation</h2>
 <pre class="input">
 this is dumb^2^!
 </pre><pre class="output">
-this is dumb<sup>2</sup>!
+<p>this is dumb<sup>2</sup>!
+</p>
 </pre>
 
 <h2>some math (not converted)</h2>
 <pre class="input">
 here we 4 - 2 do 6-7 some math 4*5 and 6 * 7 more!
 </pre><pre class="output">
-here we 4 - 2 do 6-7 some math 4*5 and 6 * 7 more!
+<p>here we 4 - 2 do 6-7 some math 4*5 and 6 * 7 more!
+</p>
 </pre>
 
 
@@ -177,7 +205,8 @@ here we 4 - 2 do 6-7 some math 4*5 and 6 * 7 more!
 <pre class="input">
 some ~sub~ text
 </pre><pre class="output">
-some <sub>sub</sub> text
+<p>some <sub>sub</sub> text
+</p>
 </pre>
 
 
@@ -185,14 +214,16 @@ some <sub>sub</sub> text
 <pre class="input">
 some "linked":bla text
 </pre><pre class="output">
-some <a href="bla">linked</a> text
+<p>some <a href="bla">linked</a> text
+</p>
 </pre>
 
 <h2>link with space</h2>
 <pre class="input">
 some "linked text":bla text
 </pre><pre class="output">
-some <a href="bla">linked text</a> text
+<p>some <a href="bla">linked text</a> text
+</p>
 </pre>
 
 <h2>link without leading space</h2>
@@ -200,7 +231,8 @@ some <a href="bla">linked text</a> text
 <pre class="input">
 some"linked":bla text
 </pre><pre class="output">
-some<a href="bla">linked</a> text
+<p>some<a href="bla">linked</a> text
+</p>
 </pre>
 
 <h2>link without trailing space</h2>
@@ -208,21 +240,24 @@ some<a href="bla">linked</a> text
 <pre class="input">
 some "linked":bla\text
 </pre><pre class="output">
-some <a href="bla">linked</a>text
+<p>some <a href="bla">linked</a>text
+</p>
 </pre>
 
 <h2>link with a query string</h2>
 <pre class="input">
 some "linked":bla?huch=hach text
 </pre><pre class="output">
-some <a href="bla?huch=hach">linked</a> text
+<p>some <a href="bla?huch=hach">linked</a> text
+</p>
 </pre>
 
 <h2>images</h2>
 <pre class="input">
 some !image.gif! text
 </pre><pre class="output">
-some <img src="image.gif"> text
+<p>some <img src="image.gif"> text
+</p>
 </pre>
 
 
@@ -230,7 +265,8 @@ some <img src="image.gif"> text
 <pre class="input">
 some !image.gif!:bla text
 </pre><pre class="output">
-some <a href="bla"><img src="image.gif"></a> text
+<p>some <a href="bla"><img src="image.gif"></a> text
+</p>
 </pre>
 
 
@@ -258,8 +294,10 @@ some text
 * four
 
 more text
+
 </pre><pre class="output">
-some text
+<p>some text
+</p>
 
 <ul>
 <li>one</li>
@@ -268,7 +306,8 @@ some text
 <li>four</li>
 </ul>
 
-more text
+<p>more text
+</p>
 </pre>
 
 <h2>nested unordered lists</h2>
@@ -305,8 +344,10 @@ some text
 ** three
 
 more text
+
 </pre><pre class="output">
-some text
+<p>some text
+</p>
 
 <ul>
 <li>one
@@ -317,7 +358,8 @@ some text
 </li>
 </ul>
 
-more text
+<p>more text
+</p>
 </pre>
 
 <h2>more unordered lists nested at the end</h2>
@@ -334,6 +376,32 @@ more text
 </li>
 </ul>
 </pre>
+
+
+<h2>A Paragraph</h2>
+<pre class="input">
+Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+
+</pre><pre class="output">
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+</p>
+</pre>
+
+<h2>A Paragraph separated with 2 linebreaks</h2>
+<pre class="input">
+
+
+Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+
+
+</pre><pre class="output">
+
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+</p>
+
+</pre>
+
+
 
   </body>
 </html>
