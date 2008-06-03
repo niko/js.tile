@@ -93,7 +93,7 @@ Textile.converter = function() {
   }
 
 	this.hard_breaks = function(text){
-		var hard_break_re = new RegExp('(<(p|li)>)([^>]+)(\n)([^<]+)(</(p|li)>)','g');
+		var hard_break_re = new RegExp('(<(p|li|h\\d)>)([^>]+)(\n)([^<]+)(</(p|li|h\\d)>)','g');
 		text = text.replace(hard_break_re, '$1$3<br/>\n$5$6');
 		return(text);
 	}
@@ -124,9 +124,18 @@ function run_tests(){
     if ( converted != expected ) {
       inputs[i].style.backgroundColor = 'red';
       outputs[i].style.backgroundColor = 'red';
-      outputs[i].innerHTML = converted + '<hr/>expected<br/><textarea>' + expected + '</textarea><br/>but got<br/><textarea>' + converted + '</textarea>';
-			alert(converted);
-			alert(expected);
+      error_output = 'expected <br/><textarea>' + expected + '</textarea><br/>';
+      error_output += 'but got<br/><textarea>' + converted + '</textarea><br/>';
+			converted_lines = converted.split('\n');
+			expected_lines = expected.split('\n');
+			diff = [];
+			for (var j = 0; j < converted_lines.length; j++){
+				if( converted_lines[j] != expected_lines[j] ){
+					diff.push(j);
+				}
+			}
+			error_output += 'diff:' + diff
+			outputs[i].innerHTML = error_output;
       num_failing++;
     }else{
       inputs[i].style.backgroundColor = 'green';
