@@ -10,7 +10,7 @@ var Textile = Textile || {};
 Textile.converter = function() {
   
   this.to_html = function(text) {
-    text = '\n\n' + text + '\n\n\n'; // wrap in linebreaks
+    text = '\n\n' + text + '\n\n'; // wrap in linebreaks
     text = this.empty_blank_lines(text);
     text = this.quick_tags(text);
     text = this.hyperref_images(text);
@@ -19,7 +19,9 @@ Textile.converter = function() {
     text = this.headings(text);
     text = this.unordered_lists(text);
     text = this.paragraphs(text);
-    text = text.replace(/^\n*/,'').replace(/\n*$/,''); // strip linebreaks again
+    text = this.hard_breaks(text);
+    text = text.replace(/([^>])\n<\//g,'$1<\/'); // close tag cleanup
+    text = text.replace(/^\n*/g,'').replace(/\n*$/g,''); // strip linebreaks again
     return text;
   };
   
@@ -63,7 +65,7 @@ Textile.converter = function() {
     return( text.replace(img_re,'<img src="$1">') );
   }
   
-  link_goal = '([^\\s\\\\]+[^;.:?!,\\s\\\\])\\\\?([;.:?!,]?)'
+  link_goal = '([^\\s\\\\]+[^;.:?!,\\s\\\\])\\\\?([;.:?!,]?)';
   this.hyperrefs = function(text){
     var link_re = new RegExp('"(.+?)":' + link_goal,'g');
     return( text.replace(link_re,'<a href="$2">$1</a>$3') );
@@ -90,12 +92,18 @@ Textile.converter = function() {
     return(text)
   }
 
-	// this.line_breaks = function
+	this.hard_breaks = function(text){
+		var hard_break_re = new RegExp('(<(p|li)>)([^>]+)(\n)([^<]+)(</(p|li)>)','g');
+		text = text.replace(hard_break_re, '$1$3<br/>\n$5$6');
+		return(text);
+	}
   
 	this.paragraphs = function(text){
 		var paragraph_re = new RegExp('(\n\n)(([^\\s<].*\n)+)\n','g');
+		// we do this twice because of overlapping regexps
+		// there must be a better way!
 		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
-		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n'); // we do this twice because of overlapping regexps
+		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
 		return(text);
 	}
 	
@@ -112,11 +120,13 @@ function run_tests(){
   var num_failing = 0;
   for (var i = 0; i < inputs.length; i++){
     converted = converter.to_html(inputs[i].innerHTML);
-    output = outputs[i].innerHTML.replace(/^\n*/,'').replace(/\n*$/,'')
-    if ( converted != output ) {
+    expected = outputs[i].innerHTML.replace(/^\n*/,'').replace(/\n*$/,'')
+    if ( converted != expected ) {
       inputs[i].style.backgroundColor = 'red';
       outputs[i].style.backgroundColor = 'red';
-      outputs[i].innerHTML = converted + '<hr/>expected<br/><textarea>' + output + '</textarea><br/>but got<br/><textarea>' + converted + '</textarea>';
+      outputs[i].innerHTML = converted + '<hr/>expected<br/><textarea>' + expected + '</textarea><br/>but got<br/><textarea>' + converted + '</textarea>';
+			alert(converted);
+			alert(expected);
       num_failing++;
     }else{
       inputs[i].style.backgroundColor = 'green';
