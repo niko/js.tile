@@ -77,18 +77,40 @@ Textile.converter = function() {
   }
   
   this.unordered_lists = function(text){
-    var first_ul_re         = new RegExp('(\n\n)\\*(\\*)? (.+)\n','g');
-    var last_ul_re          = new RegExp('(\n)\\*(\\*)? (.+)\n(\n)','g');
-    var ul_re               = new RegExp('(\n)\\*(\\*)? (.+)','g');
-    var first_nested_ul_re   = new RegExp('(\n<li>.*)</li>\n\\*','g');
-    var last_nested_ul_re   = new RegExp('\n\\*(<li>.*</li>)(\n[^\\*])','g');
-    var middle_nester_re     = new RegExp('\n\\*(<li>)','g');
-    text = text.replace(first_ul_re,              '$1<ul>\n<li>$3</li>\n');
-    text = text.replace(last_ul_re,               '$1$2<li>$3</li>\n</ul>\n$4');
-    text = text.replace(ul_re,                    '$1$2<li>$3</li>');
-    text = text.replace(first_nested_ul_re,        '$1\n<ul>\n','g');
-    text = text.replace(last_nested_ul_re,        '\n$1\n</ul>\n</li>$2','g');
-    text = text.replace(middle_nester_re,          '\n$1','g');
+		o = '\#'
+		u = '\\*'
+		i = '\\+'
+		ui = '(?:\\*|\\+)'
+		oui = '(?:\#|\\*|\\+)'
+		
+    var first_ol_re         = new RegExp('(\n\n)'+o+'(?:'+o+')? (.+)\n','g');
+    var first_ul_re         = new RegExp('(\n\n)'+u+'(?:'+u+')? (.+)\n','g');
+    var first_inc_ul_re     = new RegExp('(\n\n)'+i+'(?:'+i+')? (.+)\n','g');
+    text = text.replace(first_ol_re,        '$1<ol>\n<li>$2</li>\n');
+    text = text.replace(first_ul_re,        '$1<ul>\n<li>$2</li>\n');
+    text = text.replace(first_inc_ul_re,    '$1<ul class="incremental">\n<li>$2</li>\n');
+		
+    var last_ol_re          = new RegExp('(\n)'+o+'('+o+')? (.+)\n(\n)','g');
+    var last_ul_re          = new RegExp('(\n)'+oui+'('+oui+')? (.+)\n(\n)','g');
+    text = text.replace(last_ol_re,         '$1$2<li>$3</li>\n</ol>\n$4');
+    text = text.replace(last_ul_re,         '$1$2<li>$3</li>\n</ul>\n$4');
+		
+    var oul_re              = new RegExp('(\n)'+oui+'('+oui+')? (.+)','g');
+    text = text.replace(oul_re,              '$1$2<li>$3</li>');
+		
+    var first_nested_ol_re  = new RegExp('(\n<li>.*)</li>\n'+o,'g');
+    var first_nested_ul_re  = new RegExp('(\n<li>.*)</li>\n'+ui,'g');
+    text = text.replace(first_nested_ol_re, '$1\n<ol>\n','g');
+    text = text.replace(first_nested_ul_re, '$1\n<ul>\n','g');
+		
+    var last_nested_ol_re   = new RegExp('\n'+o+'(<li>.*</li>)(\n[^'+o+'])','g');
+    var last_nested_ul_re   = new RegExp('\n'+ui+'(<li>.*</li>)(\n[^'+ui+'])','g');
+    text = text.replace(last_nested_ol_re,  '\n$1\n</ol>\n</li>$2','g');
+    text = text.replace(last_nested_ul_re,  '\n$1\n</ul>\n</li>$2','g');
+		
+    var middle_nester_re    = new RegExp('\n'+oui+'(<li>)','g');
+    text = text.replace(middle_nester_re,   '\n$1','g');
+		
     return(text)
   }
 
@@ -101,7 +123,7 @@ Textile.converter = function() {
 	this.paragraphs = function(text){
 		var paragraph_re = new RegExp('(\n\n)(([^\\s<].*\n)+)\n','g');
 		// we do this twice because of overlapping regexps
-		// there must be a better way!
+		// there must be a better way! (It's difficult to do this with backreferences)
 		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
 		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
 		return(text);
