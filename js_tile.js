@@ -26,7 +26,7 @@ Textile.converter = function() {
   };
   
   this.headings = function(text){
-    var header_re = new RegExp('h([1|2|3|4|5|6])\. ((.+\n)+)\n'); // [^] == anything, including linebreaks
+    var header_re = new RegExp('h([1|2|3|4|5|6])\. ((.+\n)+)\n','g'); // [^] == anything, including linebreaks
     return( text.replace(header_re,'<h$1>$2</h$1>\n\n') );
   };
   
@@ -45,7 +45,7 @@ Textile.converter = function() {
     ['@', 'code']];
     for (var i=0; i<qtags.length; i++) {
       ttag = qtags[i][0]; htag = qtags[i][1];
-      qt_re = new RegExp( '(\\s)' + ttag + '(.+?)' + ttag + '(\\s|,|!|\\?|\\.)' , 'g');
+      qt_re = new RegExp( '(\\s|\n)' + ttag + '(.+?)' + ttag + '(\\s|,|!|\\?|\\.|\n)' , 'g');
       text = text.replace(qt_re,'$1<'+htag+'>'+'$2'+'</'+htag+'>$3');
     }
     // sup and sup tags may follow directly on a word character:
@@ -115,7 +115,8 @@ Textile.converter = function() {
   }
 
 	this.hard_breaks = function(text){
-		var hard_break_re = new RegExp('(<(p|li|h\\d)>)([^>]+)(\n)([^<]+)(</(p|li|h\\d)>)','g');
+		hb_inside = 'p|li|h\\d|del|em|strong|cite|ins|code|pre'
+		var hard_break_re = new RegExp('(<('+hb_inside+')>)([^>]+)(\n)([^<]+)(</('+hb_inside+')>)','g');
 		text = text.replace(hard_break_re, '$1$3<br>\n$5$6');
 		return(text);
 	}
@@ -179,5 +180,3 @@ function getElementsByClassNames(classnames){
   }
   return(elements);
 }
-
-window.onload = run_tests;
