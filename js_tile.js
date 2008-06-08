@@ -4,12 +4,24 @@ var Textile = Textile || {};
 
 // converter
 //
-// Wraps all "globals" so that the only thing
-// exposed is makeHtml().
-//
-Textile.converter = function() {
+Textile.converter = function(){
   
-  this.to_html = function(text) {
+  this.to_html = function(text){
+    var converted_text = ''
+    
+    normal_and_pre_parts = text.split('</pre>');
+    for (var i=0; i<normal_and_pre_parts.length; i++){
+      normal_and_pre_part = normal_and_pre_parts[i];
+      normal_and_pre = normal_and_pre_part.split('<pre');
+      normal = normal_and_pre[0];
+      pre = normal_and_pre[1];
+      normal = this.convert(normal);
+      converted_text = converted_text + normal + '<pre' + pre + '</pre>';
+    }
+    return converted_text;
+  }
+  
+  this.convert = function(text){
     text = '\n\n' + text + '\n\n'; // wrap in linebreaks
     text = this.empty_blank_lines(text);
     text = this.quick_tags(text);
@@ -17,13 +29,13 @@ Textile.converter = function() {
     text = this.hyperrefs(text);
     text = this.images(text);
     text = this.headings(text);
-    text = this.unordered_lists(text);
+    text = this.lists(text);
     text = this.paragraphs(text);
     text = this.hard_breaks(text);
     text = text.replace(/([^>])\n<\//g,'$1<\/'); // close tag cleanup
-    text = text.replace(/^\n*/g,'').replace(/\n*$/g,''); // strip linebreaks again
-    return text;
-  };
+    text = text.replace(/^\n*/g,'').replace(/\n*$/g,''); // strip linebreaks again    
+    return(text);
+  }
   
   this.headings = function(text){
     var header_re = new RegExp('h([1|2|3|4|5|6])\. ((.+\n)+)\n','g'); // [^] == anything, including linebreaks
@@ -76,60 +88,60 @@ Textile.converter = function() {
     return( text.replace(href_link_re,'<a href="$2"><img src="$1"></a>$3') );
   }
   
-  this.unordered_lists = function(text){
-		o = '\#'
-		u = '\\*'
-		i = '\\+'
-		ui = '(?:\\*|\\+)'
-		oui = '(?:\#|\\*|\\+)'
-		
+  this.lists = function(text){
+    o = '\#'
+    u = '\\*'
+    i = '\\+'
+    ui = '(?:\\*|\\+)'
+    oui = '(?:\#|\\*|\\+)'
+    
     var first_ol_re         = new RegExp('(\n\n)'+o+'(?:'+o+')? (.+)\n','g');
     var first_ul_re         = new RegExp('(\n\n)'+u+'(?:'+u+')? (.+)\n','g');
     var first_inc_ul_re     = new RegExp('(\n\n)'+i+'(?:'+i+')? (.+)\n','g');
     text = text.replace(first_ol_re,        '$1<ol>\n<li>$2</li>\n');
     text = text.replace(first_ul_re,        '$1<ul>\n<li>$2</li>\n');
     text = text.replace(first_inc_ul_re,    '$1<ul class="incremental">\n<li>$2</li>\n');
-		
+    
     var last_ol_re          = new RegExp('(\n)'+o+'('+o+')? (.+)\n(\n)','g');
     var last_ul_re          = new RegExp('(\n)'+oui+'('+oui+')? (.+)\n(\n)','g');
     text = text.replace(last_ol_re,         '$1$2<li>$3</li>\n</ol>\n$4');
     text = text.replace(last_ul_re,         '$1$2<li>$3</li>\n</ul>\n$4');
-		
+    
     var oul_re              = new RegExp('(\n)'+oui+'('+oui+')? (.+)','g');
     text = text.replace(oul_re,              '$1$2<li>$3</li>');
-		
+    
     var first_nested_ol_re  = new RegExp('(\n<li>.*)</li>\n'+o,'g');
     var first_nested_ul_re  = new RegExp('(\n<li>.*)</li>\n'+ui,'g');
     text = text.replace(first_nested_ol_re, '$1\n<ol>\n','g');
     text = text.replace(first_nested_ul_re, '$1\n<ul>\n','g');
-		
+    
     var last_nested_ol_re   = new RegExp('\n'+o+'(<li>.*</li>)(\n[^'+o+'])','g');
     var last_nested_ul_re   = new RegExp('\n'+ui+'(<li>.*</li>)(\n[^'+ui+'])','g');
     text = text.replace(last_nested_ol_re,  '\n$1\n</ol>\n</li>$2','g');
     text = text.replace(last_nested_ul_re,  '\n$1\n</ul>\n</li>$2','g');
-		
+    
     var middle_nester_re    = new RegExp('\n'+oui+'(<li>)','g');
     text = text.replace(middle_nester_re,   '\n$1','g');
-		
+    
     return(text)
   }
 
-	this.hard_breaks = function(text){
-		hb_inside = 'p|li|h\\d|del|em|strong|cite|ins|code|pre'
-		var hard_break_re = new RegExp('(<('+hb_inside+')>)([^>]+)(\n)([^<]+)(</('+hb_inside+')>)','g');
-		text = text.replace(hard_break_re, '$1$3<br>\n$5$6');
-		return(text);
-	}
+  this.hard_breaks = function(text){
+    hb_inside = 'p|li|h\\d|del|em|strong|cite|ins|code|pre'
+    var hard_break_re = new RegExp('(<('+hb_inside+')>)([^>]+)(\n)([^<]+)(</('+hb_inside+')>)','g');
+    text = text.replace(hard_break_re, '$1$3<br>\n$5$6');
+    return(text);
+  }
   
-	this.paragraphs = function(text){
-		var paragraph_re = new RegExp('(\n\n)(([^\\s<].*\n)+)\n','g');
-		// we do this twice because of overlapping regexps
-		// there must be a better way! (It's difficult to do this with backreferences)
-		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
-		text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
-		return(text);
-	}
-	
+  this.paragraphs = function(text){
+    var paragraph_re = new RegExp('(\n\n)(([^\\s<].*\n)+)\n','g');
+    // we do this twice because of overlapping regexps
+    // there must be a better way! (It's difficult to do this with backreferences)
+    text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
+    text = text.replace(paragraph_re, '$1<p>$2</p>\n\n');
+    return(text);
+  }
+  
 };
 
 function run_tests(){
@@ -149,16 +161,16 @@ function run_tests(){
       outputs[i].style.backgroundColor = 'red';
       error_output = 'expected <br><textarea>' + expected + '</textarea><br>';
       error_output += 'but got<br><textarea>' + converted + '</textarea><br>';
-			converted_lines = converted.split('\n');
-			expected_lines = expected.split('\n');
-			diff = [];
-			for (var j = 0; j < converted_lines.length; j++){
-				if( converted_lines[j] != expected_lines[j] ){
-					diff.push(j);
-				}
-			}
-			error_output += 'diff:' + diff
-			outputs[i].innerHTML = error_output;
+      converted_lines = converted.split('\n');
+      expected_lines = expected.split('\n');
+      diff = [];
+      for (var j = 0; j < converted_lines.length; j++){
+        if( converted_lines[j] != expected_lines[j] ){
+          diff.push(j);
+        }
+      }
+      error_output += 'diff:' + diff
+      outputs[i].innerHTML = error_output;
       num_failing++;
     }else{
       inputs[i].style.backgroundColor = 'green';
